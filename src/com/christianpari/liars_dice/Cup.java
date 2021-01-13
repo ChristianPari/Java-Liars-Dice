@@ -1,8 +1,7 @@
-package com.christianpari.LiarsDice;
+package com.christianpari.liars_dice;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Cup {
   private List<Die> dice;
@@ -31,9 +30,8 @@ public class Cup {
   }
 
   public void roll() {
-    Random random = new Random();
     for (var die : dice) {
-      die.roll(random);
+      die.roll();
     }
   }
 

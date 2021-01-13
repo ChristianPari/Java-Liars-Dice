@@ -1,4 +1,4 @@
-package com.christianpari.LiarsDice;
+package com.christianpari.liars_dice;
 
 import java.util.Scanner;
 

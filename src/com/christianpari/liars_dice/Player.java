@@ -1,4 +1,4 @@
-package com.christianpari.LiarsDice;
+package com.christianpari.liars_dice;
 
 public class Player {
   static int AMOUNT_OF_DICE = 7;
