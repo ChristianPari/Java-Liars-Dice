@@ -22,7 +22,7 @@ public class Cup {
   }
 
   public void peek() {
-    String output = "";
+    String output = "Your dice: ";
     for (var die : dice) {
       output += die.getValue() + " ";
     }

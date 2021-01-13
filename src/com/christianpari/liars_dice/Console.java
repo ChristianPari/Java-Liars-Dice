@@ -37,4 +37,13 @@ public class Console {
     System.out.println(query);
     return sc.nextLine();
   }
+
+  static public void clearScreen() {
+    int lines = 50;
+    while (lines > 0) {
+      System.out.println("\n");
+      lines--;
+    }
+    sc.nextLine();
+  }
 }

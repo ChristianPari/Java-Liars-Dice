@@ -11,11 +11,20 @@ public class LiarsDice {
   private final int CLAIM_COUNT = 1;
 
   public LiarsDice() {
+    welcome();
     generatePlayers(
       Console.getInt(2, 4, "How many players? (2-4)"),
       Console.getInt(2, 10, "Starting dice amount? (2-10)")
     );
     runGame();
+  }
+
+  private void welcome() {
+    System.out.println("Welcome to Liars Dice!\n\n" +
+      "Everyone shakes their cups of dice and then makes claims as to how many of a certain die are on the table.\n" +
+      "If you think the person before you is wrong CALL OUT THEIR LIE and if you're right then they lose a die,\n" +
+      "but if you're wrong YOU LOSE A DIE!\n" +
+      "Last player with die remaining wins! Good Luck!\n");
   }
 
   private void generatePlayers(
@@ -62,14 +71,18 @@ public class LiarsDice {
   }
 
   private boolean runTurn(Player player) {
-    Console.getString(player.getName() + "'s turn... press enter to continue...");
+    Console.getString("\n" + player.getName() + "'s turn... press enter to continue...");
     player.peek();
     if (currentClaim.length != 0) {
       System.out.println("Current claim: " + currentClaim[CLAIM_COUNT] + " " + currentClaim[CLAIM_VALUE] + "(s)");
       boolean decision = player.getDecision();
       if (decision) {
-        // if player decides the previous player is lying then do something here
-        System.out.println("player thinks previous player is lying");
+        int curPlayerId = players.indexOf(player);
+        String curPlayer = player.getName();
+        int prevPayerNum = (curPlayerId == 0) ? players.size() - 1 : curPlayerId - 1;
+        String prevPlayer = players.get(prevPayerNum).getName();
+
+        System.out.println("\n" + curPlayer + " thinks " + prevPlayer + " is lying!");
         return false;
       }
     }
@@ -78,6 +91,8 @@ public class LiarsDice {
     while (!isValidClaim(newClaim)) {
       newClaim = player.getClaim();
     }
+
+    Console.clearScreen();
     currentClaim = newClaim;
     return true;
   }
@@ -112,11 +127,19 @@ public class LiarsDice {
   private boolean endRound(int curPlayer) {
     if (isLie()) {
       curPlayer = (curPlayer - 1 < 0) ? players.size() - 1 : curPlayer - 1;
+      System.out.println("It was a lie!");
+    } else {
+      System.out.println("It was not a lie!");
     }
-    int affectedPlayer = curPlayer % players.size();
-    players.get(affectedPlayer).removeDie();
-    if (players.get(affectedPlayer).isOut()) {
+
+    int affectedPlayerId = curPlayer % players.size();
+    Player affectedPlayer = players.get(affectedPlayerId);
+    String playerName = affectedPlayer.getName();
+    affectedPlayer.removeDie();
+    System.out.println(playerName + " loses 1 die!");
+    if (affectedPlayer.isOut()) {
       players.remove(affectedPlayer);
+      System.out.println(playerName + " has no more dice and has been removed from the game.");
     }
 
     if (players.size() == 1) {
