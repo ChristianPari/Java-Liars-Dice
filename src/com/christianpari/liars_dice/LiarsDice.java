@@ -9,12 +9,25 @@ public class LiarsDice {
   private final int CLAIM_VALUE = 0;
   private final int CLAIM_COUNT = 1;
 
-  public LiarsDice(int numOfPlayers) {
+  public LiarsDice() {
+    generatePlayers(
+      Console.getInt(2, 4, "How many players? (2-4)"),
+      Console.getInt(2, 10, "Starting dice amount? (2-10)")
+    );
+    runGame();
+  }
+
+  private void generatePlayers(
+    int numOfPlayers,
+    int numOfDice
+  ) {
     players = new ArrayList<>();
     for (int count = 0; count < numOfPlayers; count++) {
-      players.add(new Player(Console.getString("Player " + (count + 1) + "'s name?")));
+      players.add(new Player(Console.getString("Player " + (count + 1) + "'s name?"), numOfDice));
     }
+  }
 
+  private void runGame() {
     while (true) {
       boolean continueGame = runRound();
       if (!continueGame) break;

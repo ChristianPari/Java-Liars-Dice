@@ -1,13 +1,15 @@
 package com.christianpari.liars_dice;
 
 public class Player {
-  static int AMOUNT_OF_DICE = 7;
   private Cup cup;
   private String name;
 
-  public Player(String name) {
+  public Player(
+    String name,
+    int numOfDice
+  ) {
     this.name = name;
-    cup = new Cup(AMOUNT_OF_DICE);
+    cup = new Cup(numOfDice);
   }
 
   public void roll() {
