@@ -5,7 +5,8 @@ import java.util.List;
 
 public class LiarsDice {
   public List<Player> players;
-  private int[] currentClaim;
+  private int roundStarter = 0;
+  private int[] currentClaim = new int[0];
   private final int CLAIM_VALUE = 0;
   private final int CLAIM_COUNT = 1;
 
@@ -34,49 +35,43 @@ public class LiarsDice {
     }
   }
 
-  public boolean runRound() {
+  private boolean runRound() {
     playersRollDice();
-
-    // -------------
-    System.out.println(players.get(0).getName() + "'s turn...");
-    players.get(0).peek();
-    currentClaim = players.get(0).getClaim();
-    int curPlayerPos = 1;
-    while (true) {
-      boolean continueRound = runTurn(players.get(curPlayerPos % players.size()));
-      if (!continueRound) break;
-      curPlayerPos++;
-    }
-    // -------------
-
-    // -------------
-    if (isLie()) {
-      curPlayerPos -= 1;
-    }
-    int affectedPlayer = curPlayerPos % players.size();
-    players.get(affectedPlayer).removeDie();
-    if (players.get(affectedPlayer).isOut()) {
-      players.remove(affectedPlayer);
-    }
-
-    if (players.size() == 1) {
-      System.out.println("Game Over " + players.get(0).getName() + " Wins!");
-      return false;
-    }
-
-    return true;
-    // ------------
+    return endRound(playersClaim());
   }
 
-  public boolean runTurn(Player player) {
+  private void playersRollDice() {
+    for (var player : players) {
+      player.roll();
+    }
+  }
+
+  private int playersClaim() {
+    int nextStarter = (roundStarter + 1 > players.size() - 1) ? 0 : roundStarter + 1;
+    int curPlayer = roundStarter;
+    while (true) {
+      boolean continueRound = runTurn(players.get(curPlayer % players.size()));
+      if (!continueRound) {
+        roundStarter = nextStarter;
+        break;
+      }
+      curPlayer++;
+    }
+
+    return curPlayer;
+  }
+
+  private boolean runTurn(Player player) {
     Console.getString(player.getName() + "'s turn... press enter to continue...");
     player.peek();
-    System.out.println("Current claim: " + currentClaim[CLAIM_COUNT] + " " + currentClaim[CLAIM_VALUE] + "(s)");
-    boolean decision = player.getDecision();
-    if (decision) {
-      // if player decides the previous player is lying then do something here
-      System.out.println("player thinks previous player is lying");
-      return false;
+    if (currentClaim.length != 0) {
+      System.out.println("Current claim: " + currentClaim[CLAIM_COUNT] + " " + currentClaim[CLAIM_VALUE] + "(s)");
+      boolean decision = player.getDecision();
+      if (decision) {
+        // if player decides the previous player is lying then do something here
+        System.out.println("player thinks previous player is lying");
+        return false;
+      }
     }
 
     int[] newClaim = player.getClaim();
@@ -87,17 +82,15 @@ public class LiarsDice {
     return true;
   }
 
-  private void playersRollDice() {
-    for (var player : players) {
-      player.roll();
-    }
-  }
-
   private boolean isValidClaim(int[] newClaim) {
-    int prevVal = currentClaim[0],
-        prevCount = currentClaim[1];
-    int newVal = newClaim[0],
-        newCount = newClaim[1];
+    int prevVal = 0,
+        prevCount = 0;
+    if (currentClaim.length != 0) {
+      prevVal = currentClaim[CLAIM_VALUE];
+      prevCount = currentClaim[CLAIM_COUNT];
+    }
+    int newVal = newClaim[CLAIM_VALUE],
+        newCount = newClaim[CLAIM_COUNT];
 
     if (newVal == prevVal && newCount == prevCount) {
       System.out.println("Invalid Claim: Same claim");
@@ -116,11 +109,30 @@ public class LiarsDice {
     return true;
   }
 
+  private boolean endRound(int curPlayer) {
+    if (isLie()) {
+      curPlayer = (curPlayer - 1 < 0) ? players.size() - 1 : curPlayer - 1;
+    }
+    int affectedPlayer = curPlayer % players.size();
+    players.get(affectedPlayer).removeDie();
+    if (players.get(affectedPlayer).isOut()) {
+      players.remove(affectedPlayer);
+    }
+
+    if (players.size() == 1) {
+      System.out.println("Game Over " + players.get(0).getName() + " Wins!");
+      return false;
+    }
+
+    currentClaim = new int[0];
+    return true;
+  }
+
   private boolean isLie() {
     int count = 0;
     for (var player : players) {
-      count += player.countOfDie(currentClaim[1]);
+      count += player.countOfDie(currentClaim[CLAIM_VALUE]);
     }
-    return count < currentClaim[1];
+    return count < currentClaim[CLAIM_COUNT];
   }
 }
