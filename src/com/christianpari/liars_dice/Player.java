@@ -24,12 +24,12 @@ public class Player {
 
   public void removeDie() { cup.removeDie(); }
 
-  public int[] getClaim() {
+  public int[] getClaim(int maxCount) {
     int dieValue,
         dieCount;
 
     dieValue = Console.getInt(1, 6, "What die value? (1 - 6)");
-    dieCount = Console.getInt(1, 14, "How many " + dieValue + "'s? (1 - 14)");
+    dieCount = Console.getInt(1, 14, "How many " + dieValue + "'s? (1 - " + maxCount + ")");
 
     return new int[] {dieValue, dieCount};
   }

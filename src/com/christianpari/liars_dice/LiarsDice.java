@@ -5,6 +5,7 @@ import java.util.List;
 
 public class LiarsDice {
   public List<Player> players;
+  private int totalDice;
   private int roundStarter = 0;
   private int[] currentClaim = new int[0];
   private final int CLAIM_VALUE = 0;
@@ -34,6 +35,7 @@ public class LiarsDice {
     players = new ArrayList<>();
     for (int count = 0; count < numOfPlayers; count++) {
       players.add(new Player(Console.getString("Player " + (count + 1) + "'s name?"), numOfDice));
+      totalDice += numOfDice;
     }
   }
 
@@ -87,9 +89,9 @@ public class LiarsDice {
       }
     }
 
-    int[] newClaim = player.getClaim();
+    int[] newClaim = player.getClaim(totalDice);
     while (!isValidClaim(newClaim)) {
-      newClaim = player.getClaim();
+      newClaim = player.getClaim(totalDice);
     }
 
     Console.clearScreen();
@@ -136,6 +138,7 @@ public class LiarsDice {
     Player affectedPlayer = players.get(affectedPlayerId);
     String playerName = affectedPlayer.getName();
     affectedPlayer.removeDie();
+    totalDice -= 1;
     System.out.println(playerName + " loses 1 die!");
     if (affectedPlayer.isOut()) {
       players.remove(affectedPlayer);
